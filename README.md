@@ -6,7 +6,7 @@
 #### [Creational](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational): 
   1. [Singleton](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/singleton)
   2. [Prototype](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/prototype)
-  3. [Builder](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/builder)
+  3. [Builder](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/builder2)
   4. [Factory method](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/factory_method)
   5. Abstract factory - **NOT implemented yet**
   
@@ -30,7 +30,7 @@
 #### [Behavioral](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/behavior) 
   1. [Mediator](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/behavior/mediator)
 #### [Arhitectural](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/architectual_patterns)
-  1. [MVC](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/architectual_patterns/mvc_student)
+  1. [MVC](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/architectual_patterns/mvc2)
   2. DAO **NOT implemented yet**
 #### [Concurrency](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/concurrency_patterns/)
   1. [Thread pool](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/concurrency_patterns/thread_pool)
