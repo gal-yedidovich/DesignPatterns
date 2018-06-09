@@ -3,13 +3,12 @@ package gof.behavior.observer2;
 import java.util.ArrayList;
 
 public class Subject {
-
     private String name;
 
-    private ArrayList<OnNameChanged> observers = new ArrayList<>();
+    private ArrayList<OnNameChanged> nameObservers = new ArrayList<>();
 
     public void attach(OnNameChanged listener) {
-        observers.add(listener);
+        nameObservers.add(listener);
     }
 
     public void setName(String name) {
@@ -18,11 +17,11 @@ public class Subject {
     }
 
     private void notifyNameChanged() {
-        for (OnNameChanged o : observers) o.onUpdate(name);
+        for (OnNameChanged o : nameObservers) o.handleNameChanged(name);
+        System.out.println();
     }
 
-
-    public static interface OnNameChanged {
-        void onUpdate(String name);
+    public interface OnNameChanged {
+        void handleNameChanged(String name);
     }
 }
