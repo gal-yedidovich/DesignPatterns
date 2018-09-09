@@ -25,7 +25,7 @@ class ThreadPool implements Closeable {
 
     /**
      * Run new runnable operation in thread pool.
-     * The pool gets the smallest queue to run the operation.
+     * The pool selects the smallest queue to run the operation.
      * <p>
      * When all DispatchQueues has more than 5 operations, create another DispatchQueue if possible.
      *
