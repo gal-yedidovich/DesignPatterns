@@ -28,6 +28,4 @@ public class MySingy {
     public static final MySingy instance = new MySingy();
     //*/
 
-    //private static MySingy instance;
-
 }
