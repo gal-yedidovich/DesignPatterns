@@ -69,7 +69,7 @@ class ThreadPool implements Closeable {
      *
      * @param operation runnable implementation to run synchronously in manager DispatchQueue.
      */
-    private void sync(final Runnable operation) {
+    private synchronized void sync(final Runnable operation) {
         managerQueue.add(operation);
     }
 
@@ -134,7 +134,7 @@ class ThreadPool implements Closeable {
          *
          * @param target new operation in queue.
          */
-        synchronized void add(Runnable target) {
+        void add(Runnable target) {
             if (thread.getState() == Thread.State.NEW) {
                 isAlive = true; //thread is alive.
                 thread.start();//lazy starting.
