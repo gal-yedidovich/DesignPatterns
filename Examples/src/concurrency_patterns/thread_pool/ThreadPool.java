@@ -83,12 +83,12 @@ class ThreadPool implements Closeable {
      * @param dq the DispatchQueue that called inactive
      */
     private void onThreadInactive(final DispatchQueue dq) {
-        if (dq == managerQueue) return; //ignore manager Queue
+        if (dq == managerQueue) return; //ignore manager Queue∫
 
         sync(() -> {
             if (dq.queue.isEmpty() && queues.size() > 3) { //double check that DP is still inactive, AND if pool has move than 3 dispatch queues, remove this one.
                 dq.kill(); //dispose thread
-                queues.remove(dq); //remove from pool
+                queues.remove(dq); //remove from poo˜l
             }
         });
     }
