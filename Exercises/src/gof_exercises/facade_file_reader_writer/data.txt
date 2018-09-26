@@ -1,2 +1,2 @@
-I'm new data in file
+I'm new text in file
 hello
