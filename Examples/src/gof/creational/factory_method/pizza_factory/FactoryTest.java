@@ -1,7 +1,7 @@
-package gof.creational.factory_method;
+package gof.creational.factory_method.pizza_factory;
 
-import gof.creational.factory_method.pizza.Pizza;
-import gof.creational.factory_method.pizza.PizzaFactory;
+import gof.creational.factory_method.pizza_factory.pizza.Pizza;
+import gof.creational.factory_method.pizza_factory.pizza.PizzaFactory;
 
 /**
  * Created by Gal on 8/23/2017.

@@ -28,25 +28,26 @@ class ThreadPool implements Closeable {
      * The pool selects the smallest queue to run the operation.
      * <p>
      * When all DispatchQueues has more than 5 operations, create another DispatchQueue if possible.
-     *
+     * <p>
      * Thread safe.
+     *
      * @param target new operation to run a DispatchQueue.
      */
-    public void async(final Runnable target) {
-        sync(() -> {
-            var dq = queues.get(0);
-            for (int i = 1; i < queues.size(); i++) { //find smallest queue.
-                if (dq.size() == 0) break; //if current dq is empty - then no need to continue.
+    public synchronized void async(final Runnable target) {
+//        sync(() -> {
+        var dq = queues.get(0);
+        for (int i = 1; i < queues.size(); i++) { //find smallest queue.
+            if (dq.size() == 0) break; //if current dq is empty - then no need to continue.
 
-                var temp = queues.get(i);
-                if (temp.size() < dq.size()) dq = temp;
-            }
+            var temp = queues.get(i);
+            if (temp.size() < dq.size()) dq = temp;
+        }
 
-            dq.add(target); //add to smallest queue - will run automatically.
+        dq.add(target); //add to smallest queue - will run automatically.
 
-            //if smallest queue is big(has more than 5 operations running) & we have less than 9 queues, add new queue.
-            if (dq.size() > 5 && queues.size() < 9) increaseCapacity();
-        });
+        //if smallest queue is big(has more than 5 operations running) & we have less than 9 queues, add new queue.
+        if (dq.size() > 5 && queues.size() < 9) increaseCapacity();
+//        });
     }
 
     /**
@@ -69,9 +70,9 @@ class ThreadPool implements Closeable {
      *
      * @param operation runnable implementation to run synchronously in manager DispatchQueue.
      */
-    private synchronized void sync(final Runnable operation) {
-        managerQueue.add(operation);
-    }
+//    private synchronized void sync(final Runnable operation) {
+//        managerQueue.add(operation);
+//    }
 
     /**
      * Event handler to handle inactive threads,
@@ -82,27 +83,27 @@ class ThreadPool implements Closeable {
      *
      * @param dq the DispatchQueue that called inactive
      */
-    private void onThreadInactive(final DispatchQueue dq) {
-        if (dq == managerQueue) return; //ignore manager Queue∫
+    private synchronized void onThreadInactive(final DispatchQueue dq) {
+//        if (dq == managerQueue) return; //ignore manager Queue
 
-        sync(() -> {
-            if (dq.queue.isEmpty() && queues.size() > 3) { //double check that DP is still inactive, AND if pool has move than 3 dispatch queues, remove this one.
-                dq.kill(); //dispose thread
-                queues.remove(dq); //remove from poo˜l
-            }
-        });
+//        sync(() -> {
+        if (dq.queue.isEmpty() && queues.size() > 3) { //double check that DP is still inactive, AND if pool has move than 3 dispatch queues, remove this one.
+            dq.kill(); //dispose thread
+            queues.remove(dq); //remove from poo˜l
+        }
+//        });
     }
 
     /**
      * Kill all threads
      * Thread safe
      */
-    private void dispose() {
-        sync(() -> {
-            System.out.println("Thread pool - kill");
-            for (DispatchQueue t : queues) t.kill();
-            managerQueue.kill();
-        });
+    private synchronized void dispose() {
+//        sync(() -> {
+        System.out.println("Thread pool - kill");
+        for (DispatchQueue t : queues) t.kill();
+        managerQueue.kill();
+//        });
     }
 
     private class DispatchQueue implements Runnable {
@@ -151,7 +152,7 @@ class ThreadPool implements Closeable {
          */
         @Override
         public void run() {
-            while (isAlive)
+            while (isAlive || !queue.isEmpty()) //if dispatch queue is alive OR there are still some tasks to execute.
                 if (!queue.isEmpty()) queue.remove().run(); //run operation.
                 else {
                     try {

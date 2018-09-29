@@ -56,7 +56,6 @@ public class Person {
             return this;
         }
 
-
         public Person build() {
             Person p = new Person();
             p.age = age;
