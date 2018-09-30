@@ -35,10 +35,18 @@ public class ThreadPoolTest {
                 Thread.sleep(500);
             }
 
-            for (int i = 0; i < 30; i++) {
+            for (int i = 0; i < 10; i++) {
                 Thread.sleep(300);
                 System.out.println("hi " + i);
             }
+
+            Thread.sleep(1500);
+            pool.async(() -> System.out.println("job 1"));
+            Thread.sleep(500);
+            pool.async(() -> System.out.println("job 2"));
+            Thread.sleep(400);
+            pool.async(() -> System.out.println("job 3"));
+//            Thread.sleep(50);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

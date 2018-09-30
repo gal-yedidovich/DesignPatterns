@@ -12,7 +12,6 @@ import java.util.Queue;
  */
 class ThreadPool implements Closeable {
     private int threadNums;//numbering thread names
-    private DispatchQueue managerQueue = new DispatchQueue("manager thread"); //queue that synchronize pool methods.
     private ArrayList<DispatchQueue> queues = new ArrayList<>(); //collection of dispatch queues that work concurrently.
 
     /**
@@ -34,7 +33,6 @@ class ThreadPool implements Closeable {
      * @param target new operation to run a DispatchQueue.
      */
     public synchronized void async(final Runnable target) {
-//        sync(() -> {
         var dq = queues.get(0);
         for (int i = 1; i < queues.size(); i++) { //find smallest queue.
             if (dq.size() == 0) break; //if current dq is empty - then no need to continue.
@@ -47,7 +45,6 @@ class ThreadPool implements Closeable {
 
         //if smallest queue is big(has more than 5 operations running) & we have less than 9 queues, add new queue.
         if (dq.size() > 5 && queues.size() < 9) increaseCapacity();
-//        });
     }
 
     /**
@@ -59,20 +56,17 @@ class ThreadPool implements Closeable {
         queues.add(new DispatchQueue("thread #" + ++threadNums)); //add new DP to pool
     }
 
+    /**
+     * Kill all threads
+     * Thread safe
+     */
     @Override
     public void close() {
-        dispose();
+        synchronized (this) {
+            System.out.println("Thread pool - kill");
+            for (DispatchQueue t : queues) t.kill();
+        }
     }
-
-    /**
-     * Run operation in manager DispatchQueue,
-     * Makes operations thread safe.
-     *
-     * @param operation runnable implementation to run synchronously in manager DispatchQueue.
-     */
-//    private synchronized void sync(final Runnable operation) {
-//        managerQueue.add(operation);
-//    }
 
     /**
      * Event handler to handle inactive threads,
@@ -84,26 +78,10 @@ class ThreadPool implements Closeable {
      * @param dq the DispatchQueue that called inactive
      */
     private synchronized void onThreadInactive(final DispatchQueue dq) {
-//        if (dq == managerQueue) return; //ignore manager Queue
-
-//        sync(() -> {
         if (dq.queue.isEmpty() && queues.size() > 3) { //double check that DP is still inactive, AND if pool has move than 3 dispatch queues, remove this one.
             dq.kill(); //dispose thread
-            queues.remove(dq); //remove from poo˜l
+            queues.remove(dq); //remove from pool
         }
-//        });
-    }
-
-    /**
-     * Kill all threads
-     * Thread safe
-     */
-    private synchronized void dispose() {
-//        sync(() -> {
-        System.out.println("Thread pool - kill");
-        for (DispatchQueue t : queues) t.kill();
-        managerQueue.kill();
-//        });
     }
 
     private class DispatchQueue implements Runnable {
@@ -116,7 +94,7 @@ class ThreadPool implements Closeable {
          *
          * @param name name of the thread inside the DQ.
          */
-        DispatchQueue(String name) {
+        public DispatchQueue(String name) {
             thread = new Thread(this);
             thread.setName(name);
             queue = new ArrayDeque<>();
@@ -126,7 +104,7 @@ class ThreadPool implements Closeable {
         /**
          * @return size of operations queue.
          */
-        int size() {
+        public int size() {
             return queue.size();
         }
 
@@ -135,12 +113,13 @@ class ThreadPool implements Closeable {
          *
          * @param target new operation in queue.
          */
-        void add(Runnable target) {
+        public synchronized void add(Runnable target) {
             if (thread.getState() == Thread.State.NEW) {
                 isAlive = true; //thread is alive.
                 thread.start();//lazy starting.
             }
             queue.add(target);
+            notifyAll();
         }
 
         /**
@@ -156,8 +135,16 @@ class ThreadPool implements Closeable {
                 if (!queue.isEmpty()) queue.remove().run(); //run operation.
                 else {
                     try {
-                        onThreadInactive(this); //notify pool that this thread is inactive
-                        Thread.sleep(20); //wait 20 ms, to save resources
+                        onThreadInactive(this); //notify pool that this thread is idle, and kill if needed.
+                        //Lock double checking, check if pool killed this thread, if not then wait until notifying.
+                        if (isAlive) {
+                            synchronized (this) {
+                                if (isAlive) {
+                                    System.out.println(thread.getName() + " - waiting");
+                                    wait();
+                                }
+                            }
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
@@ -169,10 +156,12 @@ class ThreadPool implements Closeable {
         /**
          * Kill this thread.
          * <p>
-         * Turn isAlive to false, meaning to break the 'while' loop in run method.
+         * Turns isAlive to false, meaning to break the 'while' loop in run method.
+         * also notify waiting threads.
          */
-        void kill() {
+        public synchronized void kill() {
             isAlive = false;
+            notifyAll();
         }
     }
 }
