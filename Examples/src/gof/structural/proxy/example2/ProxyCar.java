@@ -3,8 +3,8 @@ package gof.structural.proxy.example2;
 /**
  * Created by Gal on 8/30/2017.
  */
-public class ProxyCar implements ICar {
-    private ICar realCar;
+public class ProxyCar implements Drivable {
+    private Drivable realCar;
     private Driver driver;
 
     public ProxyCar(Driver driver) {
