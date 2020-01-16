@@ -8,7 +8,7 @@
   2. [Prototype](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/prototype)
   3. [Builder](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/builder2)
   4. [Factory method](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/factory_method)
-  5. Abstract factory - **NOT implemented yet**
+  5. [Abstract factory](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/creational/abstract_factory)
   
 ### Second day - 
 ####  [Structural](https://github.com/gal-yedidovich/DesignPatterns/tree/master/Examples/src/gof/structural)
